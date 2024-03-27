@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Colour Contrast Analyser (CCA)
+Comment=Checks color contrast against WCAG criteria
+Exec=cca
+Terminal=false
+Type=Application
+Icon=cca
+StartupNotify=true
+StartupWMClass=cca
+Categories=Office;

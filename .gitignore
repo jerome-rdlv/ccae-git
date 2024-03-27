@@ -1,0 +1,5 @@
+*.pkg.tar*
+*.zip
+/pkg
+/src
+/ccae-git
