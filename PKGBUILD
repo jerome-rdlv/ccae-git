@@ -1,6 +1,6 @@
 # Maintainer: Jérôme Mulsant <jerome@rue-de-la-vieille.fr>
 pkgname=ccae-git
-pkgver=3.5.1.r5.g157f549
+pkgver=3.5.4.r0.g2224d86
 pkgrel=1
 epoch=
 pkgdesc="Colour Contrast Analyser (CCA) - Checks color contrast against WCAG criteria."
