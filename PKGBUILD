@@ -1,13 +1,16 @@
 # Maintainer: Jérôme Mulsant <jerome@rue-de-la-vieille.fr>
+_appname=cca
 pkgname=ccae-git
 pkgver=3.5.4.r0.g2224d86
-pkgrel=1
+pkgrel=2
 epoch=
 pkgdesc="Colour Contrast Analyser (CCA) - Checks color contrast against WCAG criteria."
-arch=('any')
+arch=('x86_64')
+_electron=electron32
 url="https://developer.paciellogroup.com/color-contrast-checker/"
-license=('GPL3')
-makedepends=('git' 'npm' 'libxcrypt-compat')
+license=(GPL-3.0-only)
+depends=("$_electron" 'imlib2' 'hicolor-icon-theme')
+makedepends=('asar' 'git' 'npm' 'libxcrypt-compat')
 source=("$pkgname::git+https://github.com/ThePacielloGroup/CCAe.git"
     "cca.desktop")
 noextract=()
@@ -20,16 +23,17 @@ pkgver() {
 }
 
 build() {
+    _version="$(</usr/lib/${_electron}/version)"
     cd "$pkgname"
     npm install
-    npx electron-builder build -l tar.xz
+    npx electron-builder build --linux --x64 -l tar.xz \
+        -c.electronDist="/usr/lib/$_electron" \
+        -c.electronVersion="$_version"
 }
 
 package() {
-    depends=('hicolor-icon-theme')
 
-    # Install desktop file
-    install -Dm0644 cca.desktop -t "${pkgdir}"/usr/share/applications/
+    install -Dm0644 cca.desktop -t "${pkgdir}/usr/share/applications/${_appname}"
 
     cd "${srcdir}/${pkgname}/build"
 
@@ -38,17 +42,19 @@ package() {
     for resolution in "${resolutions[@]}"
     do
         install -Dm0644 "${resolution}.png" \
-            "${pkgdir}/usr/share/icons/hicolor/${resolution}/apps/cca.png"
+            "${pkgdir}/usr/share/icons/hicolor/${resolution}/apps/${_appname}.png"
     done
 
-    install -Dm0644 "icon.svg" "${pkgdir}/usr/share/icons/hicolor/scalable/apps/cca.svg"
+    install -Dm0644 "icon.svg" "${pkgdir}/usr/share/icons/hicolor/scalable/apps/${_appname}.svg"
 
     cd "${srcdir}/${pkgname}/dist/linux-unpacked"
 
-    install -dm0755 "${pkgdir}/opt/cca"
-    cp -r ./* "${pkgdir}/opt/cca"
+    install -Dm755 /dev/null "${pkgdir}/usr/bin/${_appname}"
+    cat >> "${pkgdir}/usr/bin/${_appname}" <<EOD
+#!/usr/bin/bash
+exec $_electron /usr/lib/$pkgname "\$@"
+EOD
 
-    # Symlink /usr/bin executable to opt
-    install -dm0755 "${pkgdir}/usr/bin"
-    ln -s /opt/cca/cca "${pkgdir}/usr/bin/cca"
+    install -d "$pkgdir/usr/lib/$pkgname/"
+    asar e "resources/app.asar" "$pkgdir/usr/lib/$pkgname/"
 }
