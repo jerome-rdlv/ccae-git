@@ -1,12 +1,12 @@
 # Maintainer: Jérôme Mulsant <jerome@rue-de-la-vieille.fr>
 _appname=cca
 pkgname=ccae-git
-pkgver=3.5.4.r0.g2224d86
-pkgrel=2
+pkgver=3.5.4.r2.gc2ab5c0
+pkgrel=3
 epoch=
 pkgdesc="Colour Contrast Analyser (CCA) - Checks color contrast against WCAG criteria."
 arch=('x86_64')
-_electron=electron32
+_electron=electron34
 url="https://developer.paciellogroup.com/color-contrast-checker/"
 license=(GPL-3.0-only)
 depends=("$_electron" 'imlib2' 'hicolor-icon-theme')
@@ -26,6 +26,7 @@ build() {
     _version="$(</usr/lib/${_electron}/version)"
     cd "$pkgname"
     npm install
+    npm audit fix
     npx electron-builder build --linux --x64 -l tar.xz \
         -c.electronDist="/usr/lib/$_electron" \
         -c.electronVersion="$_version"
